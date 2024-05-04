@@ -1,28 +1,28 @@
-#Creating a secure password generator using secrets instead of random module
-
-import secrets 
+import secrets
 import string
-symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']     #defining a list of symbols
-PasswordLength = int(input("Enter the length of the password required: "))
-NumberOfSymbol = int(input("Enter the number of symbols you want in the password: "))
-Numbers = int(input("Enter the amount of numbers you want in the password: "))
+import re
+alphabet = string.ascii_letters + string.digits + string.punctuation
+#function to chheck special symbols
+def has_symbol(s):
+    pattern = re.compile(r'[' + re.escape(string.punctuation) + ']')
+    # Use search to find if any symbol matches the pattern
+    return bool(pattern.search(s))
 
-alphabet = string.ascii_letters+string.digits #define a string of alphanum
 
-password = secrets.choice(alphabet)
-for i  in range(1,PasswordLength+1):
-    if NumberOfSymbol>0:    #check reuqired amount of symbols
-        password += secrets.choice(symbols)
-        NumberOfSymbol-=1
-    elif Numbers > 0 :      #check required amount of numbers
-        password += secrets.choice(string.digits)
-        Numbers-=1
+#function to generate the password
+def generate_password(length,number_count,special_char_count):
+    while True:
+        password = ''.join(secrets.choice(alphabet) for i in range(length))
+        if (sum(c.isdigit() for c in password) >=number_count and sum(has_symbol(c) for c in password) >= special_char_count):
+           return password
+    
 
-    else:
-        password+=secrets.choice(alphabet)
-#shuffle the password to the rquired length
-password="".join(secrets.choice(password) for i in range (PasswordLength))
 
-#display the password generated
+if __name__ == '__main__':
+    length = int(input("Enter the length of the password: "))
+    number_count = int(input("Enter the count of numbers you want in the password: "))
+    special_char_count = int(input("Enter the count of special symbols you want: "))
 
-print(f"The generated password is {password}")
+    password = generate_password(length,number_count,special_char_count)
+
+    print(f'The generarted password is : {password}')
